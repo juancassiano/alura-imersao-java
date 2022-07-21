@@ -18,6 +18,7 @@ public class StickersGenerator {
     int width = originalImage.getWidth();
     int height = originalImage.getHeight();
     int newHeight = height + 200;
+    File outDirFile = new File("./assets/" + fileName);
 
     BufferedImage newImage = new BufferedImage(width, newHeight, BufferedImage.TRANSLUCENT);
 
@@ -30,7 +31,7 @@ public class StickersGenerator {
 
     graphics.drawString("IMERSAO JAVA ALURA", 100, newHeight - 100);
 
-    ImageIO.write(newImage, "png", new File("assets" + fileName));
+    ImageIO.write(newImage, "png", outDirFile);
 
   }
 

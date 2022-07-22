@@ -1,40 +1,32 @@
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
-import java.util.Map;
 
 public class App {
     public static void main(String[] args) throws Exception {
 
         // String url = "https://imdb-api.com/en/API/Top250Movies/k_27f42loh";
-        String url = "https://api.mocki.io/v2/549a5d8b/Top250Movies"; // MOCK
-        URI address = URI.create(url);
-        var client = HttpClient.newHttpClient();
-        var request = HttpRequest.newBuilder(address).GET().build();
+        // String url = "https://api.mocki.io/v2/549a5d8b/Top250Movies"; // MOCK
+        // ExtractContent extractContent = new ExtractImdbContent();
 
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        String body = response.body();
+        String url = "https://api.nasa.gov/planetary/apod?api_key=l81Fp2A9hjCWEk6TzGSlp159moFZ9zvKAeKHObgc&start_date=2022-07-20&end_date=2022-07-21";
+        ExtractContent extractContent = new ExtractNasaContent();
 
-        var parser = new JsonParser();
-        List<Map<String, String>> listaDeFilmes = parser.parse(body);
+        var http = new ClientHttp();
+        String json = http.buscaDados(url);
+        List<Content> contents = extractContent.extractContents(json);
 
-        for (Map<String, String> filme : listaDeFilmes) {
-            String urlImage = filme.get("image");
-            String title = filme.get("title");
+        var stickersGenerator = new StickersGenerator();
 
-            InputStream inputStream = new URL(urlImage).openStream();
+        for (int i = 0; i < 10; i++) {
+            Content content = contents.get(i);
 
-            String fileName = title + ".png";
-            StickersGenerator stickersGenerator = new StickersGenerator();
+            InputStream inputStream = new URL(content.getUrlImage()).openStream();
+
+            String fileName = content.getTitle() + ".png";
             stickersGenerator.create(inputStream, fileName);
 
-            System.out.println(title);
-            System.out.println(filme.get("imDbRating"));
+            System.out.println(content.getTitle());
             System.out.println();
         }
 
